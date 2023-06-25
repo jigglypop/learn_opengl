@@ -16,6 +16,10 @@ GLfloat positions[] = {
     0.5f, 0.5f,
 };
 
+const char* loadFile(const char* filename) {
+    FILE *fp = fopen(filename, "r");
+}
+
 void AttachShader(GLuint program, GLenum type, const char *src){
     GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &src, NULL);

@@ -2,34 +2,21 @@
 #include <string.h>
 #include <stdlib.h>
 
-int main(int argc, char const *argv[])
-{
-    printf("hello");
-    const char* ptr = "123";
-    char *buf = (char *)malloc(sizeof(char) * (strlen(ptr) + 1));
-    FILE *fp = fopen(ptr, "r");
-    return 0;
+const char* loadFile( const char* filename ) {
+	FILE* fp = fopen( filename, "r" );
+	if (fp == NULL) {
+		fprintf(stderr, "Error: cannot open \"%s\"\n", filename);
+		return NULL;
+	}
+	fseek(fp, 0, SEEK_END);
+	size_t len = ftell(fp);
+	rewind(fp);
+	char* buf = (char*)malloc(sizeof(char) * (len + 4));
+	size_t size = fread(buf, sizeof(char), len, fp);
+	fclose(fp);
+	buf[size] = '\0';
+	return (const char*)buf;
 }
-
-
-// const char* loadFile( const char* filename ) {
-// 	FILE* fp = fopen( filename, "r" );
-// 	if (fp == NULL) {
-// 		fprintf(stderr, "Error: cannot open \"%s\"\n", filename);
-// 		return NULL;
-// 	}
-// 	// get file size to allocate a buffer
-// 	fseek(fp, 0, SEEK_END);
-// 	size_t len = ftell(fp);
-// 	rewind(fp);
-// 	char* buf = (char*)malloc(sizeof(char) * (len + 4));
-// 	// read in the whole contents: (ASSUMPTION: small file size)
-// 	size_t size = fread(buf, sizeof(char), len, fp);
-// 	fclose(fp);
-// 	buf[size] = '\0';
-// 	// done
-// 	return (const char*)buf;
-// }
 
 
 const char* getBaseName( const char* progname ) {
@@ -47,16 +34,12 @@ const char* getBaseName( const char* progname ) {
 }
 
 const char* getVertName( const char* basename) {
-	// CAUTION: this VertName is only for one-time use.
-	// Do not store the character pointer for later uses.
 	static char buf[256];
 	sprintf(buf, "%s.vert", basename);
 	return (const char*)buf;
 }
 
 const char* getFragName( const char* basename) {
-	// CAUTION: this VertName is only for one-time use.
-	// Do not store the character pointer for later uses.
 	static char buf[256];
 	sprintf(buf, "%s.frag", basename);
 	return (const char*)buf;

@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/donghwanyeom/Desktop/opengl/opengl/shaders",
-      "program": "/Users/donghwanyeom/Desktop/opengl/opengl/shaders/build/Debug/outDebug"
+      "cwd": "/Users/donghwanyeom/Desktop/opengl/opengl/triangle",
+      "program": "/Users/donghwanyeom/Desktop/opengl/opengl/triangle/build/Debug/outDebug"
     }
   ]
 }

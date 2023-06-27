@@ -6,8 +6,8 @@
       "type": "lldb",
       "request": "launch",
       "args": [],
-      "cwd": "/Users/donghwanyeom/Desktop/C",
-      "program": "/Users/donghwanyeom/Desktop/C/build/Debug/outDebug"
+      "cwd": "/Users/donghwanyeom/Desktop/opengl/C",
+      "program": "/Users/donghwanyeom/Desktop/opengl/C/build/Debug/outDebug"
     }
   ]
 }

@@ -8,6 +8,9 @@
 
 GLint status;
 GLuint vao = 0;
+GLuint locPos;
+GLuint locCor;
+
 unsigned int buffer;
 char buf[1024];
 const unsigned int W = 300;
@@ -19,18 +22,22 @@ const char* fragFileName = "triangle.frag";
 GLuint vert = 0; 
 GLuint frag = 0; 
 GLuint prog = 0; 
-GLfloat vertPos[] = {
-	-0.5F, -0.5F, 0.0F, 1.0F,
-	+0.5F, -0.5F, 0.0F, 1.0F,
-	-0.5F, +0.5F, 0.0F, 1.0F,
-};
 
+GLfloat vertPosFirst[] = {
+	-0.5F, -0.5F, 0.0F, 1.0F,
+	+0.0F, -0.5F, 0.0F, 1.0F,
+	-0.5F, +0.0F, 0.0F, 1.0F,
+};
+GLfloat vertPosSecond[] = {
+	0.0F, 0.0F, 0.0F, 1.0F,
+	0.5F, 0.0F, 0.0F, 1.0F,
+	0.0F, 0.5F, 0.0F, 1.0F,
+};
 GLfloat vertColor[] = {
 	1.0F, 0.0F, 0.0F, 1.0F, // red
 	0.0F, 1.0F, 0.0F, 1.0F, // green
 	0.0F, 0.0F, 1.0F, 1.0F, // blue
 };
-
 // 파일 로더
 const char* loadFile(const char* filename) {
     FILE *fp = fopen(filename, "r");
@@ -55,21 +62,14 @@ void AttachShader(GLuint program, GLenum type, const char *src){
     glGetShaderInfoLog(shader, sizeof(buf), NULL, buf);
     printf("vert log = [%s]\n", buf);
 }
-
-
 // vao 에러 처리
 void initVao() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    // glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertPos, GL_STATIC_DRAW);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
-
 }
-
+// 펑션 시작
 void initFunc(const char* shader, ...) {
     prog = glCreateProgram();
     va_list args;
@@ -83,25 +83,21 @@ void initFunc(const char* shader, ...) {
     glLinkProgram(prog);
     glUseProgram(prog);
 }
-
+// 그리기
 void drawFunc(void) {
     glClear(GL_COLOR_BUFFER_BIT);
-    // // aPos
-    // GLuint loc = glGetAttribLocation(program, "aPos");
-    // glEnableVertexAttribArray(loc);
-    // glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, vertPos);
-	// // aColor
-	// loc = glGetAttribLocation(program, "aColor");
-	// glEnableVertexAttribArray(loc);
-	// glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, vertColor);
-    GLuint loc = glGetAttribLocation(prog, "aPos");
-	glEnableVertexAttribArray(loc);
-	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, vertPos);
-
-	loc = glGetAttribLocation(prog, "aColor");
-	glEnableVertexAttribArray(loc);
-	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, vertColor);
+    // 포지션
+    locPos = glGetAttribLocation(prog, "aPos");
+	glEnableVertexAttribArray(locPos);
+	glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, 0, vertPosFirst);
+    // 색깔
+	locCor = glGetAttribLocation(prog, "aColor");
+	glEnableVertexAttribArray(locCor);
+	glVertexAttribPointer(locCor, 4, GL_FLOAT, GL_FALSE, 0, vertColor);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    // 두번째 포지션
+	glVertexAttribPointer(locPos, 4, GL_FLOAT, GL_FALSE, 0, vertPosSecond);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
     // done
 	glFinish();
 }
@@ -132,7 +128,6 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
     // 완료
     glfwTerminate();
     return 0;

@@ -17,7 +17,7 @@
         "${workspaceFolder}/*.cpp",
         "${workspaceFolder}/*.c",
         "${workspaceFolder}/glad.c",
-        "${workspaceFolder}/common.c",
+        // "${workspaceFolder}/common.c",
         "-o",
         "${workspaceFolder}/app",
         "-framework",

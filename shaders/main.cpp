@@ -1,4 +1,3 @@
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -6,8 +5,6 @@
 #include <string.h> 
 #include <cstdarg>
 #include <mm_malloc.h>
-
-using namespace std;
 
 GLuint vao = 0;
 unsigned int buffer;
@@ -91,7 +88,6 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    cout << "hello" << endl;
 
     // 완료
     glfwTerminate();

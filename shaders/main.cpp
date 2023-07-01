@@ -1,95 +1,56 @@
+// static lib 사용
+#define GLEW_STATIC
+ 
+// include 순서는 glew > glfw 순서로.
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-#include <stdio.h>
-#include <string.h> 
-#include <cstdarg>
-#include <mm_malloc.h>
-
-GLuint vao = 0;
-unsigned int buffer;
-
-const unsigned int W = 300;
-const unsigned int H = 300;
-
-const char* vertFileName = "triangle.vert";
-const char* fragFileName = "triangle.frag";
-
-GLfloat positions[] = {
-    -0.5f, -0.5f,
-    -0.5f,  0.5f,
-    0.5f, 0.5f,
-};
-// 파일 로더
-const char* loadFile(const char* filename) {
-    FILE *fp = fopen(filename, "r");
-	fseek(fp, 0, SEEK_END);
-	size_t len = ftell(fp);
-    rewind(fp);
-    char* buf = (char*) malloc(sizeof(char) * (len + 4));
-	size_t size = fread(buf, sizeof(char), len, fp);
-	fclose(fp);
-	buf[size] = '\0';
-	return (const char*)buf;
-}
-// 쉐이더 붙이기
-void AttachShader(GLuint program, GLenum type, const char *src){
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, NULL);
-    glCompileShader(shader);
-    glAttachShader(program, shader);
-}
-
-void initFunc(const char* shader, ...) {
-    GLuint program = glCreateProgram();
-    va_list args;
-    va_start(args, shader);
-    while (shader) {
-        const GLenum type = va_arg( args, GLenum);
-        AttachShader(program, type, shader);
-        shader = va_arg(args, const char*);
-    }
-    va_end(args);
-    glLinkProgram(program);
-    glUseProgram(program);
-}
-
-// vao 에러 처리
-void initVao() {
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
-    glEnableVertexAttribArray( 0 );
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-}
-
-int main() {
-    glfwInit();
-    /* Core profile */
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#include <glm/glm.hpp>
+ 
+void render(GLFWwindow* window);
+ 
+int main(void)
+{
+    // MAC일 경우에 4.1버전을 가져오기
+#ifdef __APPLE__
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    // 윈도우 오픈
-    GLFWwindow* window = glfwCreateWindow(W, H, "Hello World", NULL, NULL);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+ 
+    // glfw 초기화
+    glfwInit();
+ 
+    // window 만들기 (width, height, title, monitor, share)
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Inyong", 0, 0);
+    
+    // context는 그리기 위한 내용을 담고 있음
+    // window가 두개이면 context가 두개일수도 있음
+    // 그러면 어떤 context로 그릴지 정해줘야 함
     glfwMakeContextCurrent(window);
-    if(glewInit() != GLEW_OK) printf("error");
-    // vao 에러 처리부
-    initVao();
-    // 함수 시작 (버텍스 쉐이더, 프레그먼트 쉐이더 넣기)
-    initFunc(loadFile(vertFileName), GL_VERTEX_SHADER, loadFile(fragFileName), GL_FRAGMENT_SHADER, NULL);
-
+ 
+    // context가 만들어지고 난 후, glew 초기화
+    glewInit();
+ 
+    // 사용자가 window 창을 닫을 때까지
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glfwSwapBuffers(window);
+        // window 그려주기
+        render(window);
+ 
+        // 마우스 움직이는 것. 이런것들 들고와서 필요한 window한테 보내주기
         glfwPollEvents();
     }
-
-    // 완료
+ 
+    // window가 닫혔을 경우 끝내자
+    glfwDestroyWindow(window);
     glfwTerminate();
-    return 0;
+}
+ 
+void render(GLFWwindow* window) { 
+    // 지우는 색깔 (어떤 색으로 칠할건지)
+    glClearColor(0, 0, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+ 
+    // 깜빡거림 방지
+    glfwSwapBuffers(window);
 }
